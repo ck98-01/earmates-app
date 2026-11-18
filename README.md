@@ -12,7 +12,7 @@
   <a href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip"><b>⬇ Download for Windows</b></a>
 </p>
 
-<p align="center">Free. Works without internet. Collects nothing.</p>
+<p align="center">Free. Works without internet. Collects nothing. · <a href="https://ck98-01.github.io/audioshare-app/">Website</a></p>
 
 ---
 
