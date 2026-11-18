@@ -244,6 +244,23 @@
   footer a { color: var(--muted); }
   footer a:hover { color: var(--text); }
 
+
+  /* support */
+  .support { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(24px, 4vw, 48px); align-items: center;
+             margin-top: 36px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: clamp(20px, 3vw, 32px); }
+  .support .qr { width: 168px; border-radius: 12px; background: #F4EFEF; padding: 6px; }
+  .support h3 { font-size: 22px; font-weight: 650; }
+  .support .net { display: inline-flex; gap: 8px; align-items: center; margin-top: 6px; }
+  .support .net b { font: 600 12px/1 var(--mono); color: #26A17B; background: rgba(38, 161, 123, .14); padding: 5px 8px; border-radius: 6px; }
+  .address { display: flex; gap: 8px; margin-top: 16px; min-width: 0; }
+  .address code { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; font: 500 15px/1.4 var(--mono); background: var(--bg);
+                  border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; user-select: all; }
+  .copy { flex: none; font: 600 14px/1 var(--body); color: var(--text); background: var(--surface-2); border: 1px solid var(--line);
+          border-radius: 10px; padding: 0 16px; cursor: pointer; }
+  .copy:hover { background: var(--raise); }
+  .support .warn { font-size: 14px; color: var(--b); margin: 12px 0 0; }
+  @media (max-width: 700px) { .support { grid-template-columns: minmax(0, 1fr); } .support .qr { justify-self: start; } }
+
   @media (max-width: 920px) {
     .hero { grid-template-columns: minmax(0, 1fr); }
     .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -287,7 +304,7 @@
 <div class="wrap">
   <header class="bar">
     <a class="brand" href="#top" aria-label="AudioShare home"><svg aria-hidden="true"><use href="#logo"/></svg>AudioShare</a>
-    <nav aria-label="Sections"><a href="#how">How it works</a><a href="#install">Install</a><a href="#faq">Questions</a><a href="https://github.com/ck98-01/audioshare-app">GitHub</a></nav>
+    <nav aria-label="Sections"><a href="#how">How it works</a><a href="#install">Install</a><a href="#faq">Questions</a><a href="#support">Support</a><a href="https://github.com/ck98-01/audioshare-app">GitHub</a></nav>
   </header>
 
   <main id="top">
@@ -423,6 +440,21 @@
       </div>
     </section>
 
+    <section id="support" aria-labelledby="support-h">
+      <div class="kicker">Support</div>
+      <h2 id="support-h">Free, and kept free by people like you.</h2>
+      <p class="intro">AudioShare has no ads and no subscriptions. If it made a film night or a long trip better, a small tip helps keep it updated for new Mac and Windows versions.</p>
+      <div class="support">
+        <div>
+          <h3>Tip in USDT</h3>
+          <div class="net"><b>TRC-20</b><span class="mono">Tron network</span></div>
+          <div class="address"><code id="usdt">TTAB8mi1sPNm5gCgGcBWSxf61abUnPNtNJ</code><button class="copy" id="copy" type="button">Copy</button></div>
+          <p class="warn">Send only USDT on the Tron (TRC-20) network. Other coins, or USDT on another network, can't be recovered.</p>
+        </div>
+        <img class="qr" src="images/usdt-qr.svg" alt="QR code for the USDT TRC-20 address" width="168" height="168">
+      </div>
+    </section>
+
     <div class="closing">
       <div>
         <h2>Press play once. Everyone hears it.</h2>
@@ -440,6 +472,7 @@
     <a href="https://github.com/ck98-01/audioshare-app/releases">All downloads</a>
     <a href="https://github.com/ck98-01/audioshare-app#readme">Full guide</a>
     <a href="https://github.com/ck98-01/audioshare-app/issues">Report a problem</a>
+    <a href="#support">Support AudioShare</a>
   </footer>
 </div>
 
@@ -481,6 +514,15 @@
   });
   demo.classList.add('sharing');
   render();
+
+  // Copy the tip address.
+  const copyBtn = document.getElementById('copy');
+  copyBtn.addEventListener('click', async () => {
+    const text = document.getElementById('usdt').textContent;
+    try { await navigator.clipboard.writeText(text); copyBtn.textContent = 'Copied'; }
+    catch { getSelection().selectAllChildren(document.getElementById('usdt')); copyBtn.textContent = 'Press ⌘C / Ctrl+C'; }
+    setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2500);
+  });
 </script>
 </body>
 </html>

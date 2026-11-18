@@ -12,7 +12,7 @@
   <a href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip"><b>⬇ Download for Windows</b></a>
 </p>
 
-<p align="center">Free. Works without internet. Collects nothing. · <a href="https://ck98-01.github.io/audioshare-app/">Website</a></p>
+<p align="center">Free. Works without internet. Collects nothing. · <a href="https://ck98-01.github.io/audioshare-app/">Website</a> · <a href="#support-audioshare">Support</a></p>
 
 ---
 
@@ -252,6 +252,20 @@ Yes and yes. It's free, works without internet, and collects nothing. Windows an
 ## Updating
 
 Download again from the links at the top and replace the old app. Your settings are kept.
+
+## Support AudioShare
+
+AudioShare is free, with no ads and no subscriptions. If it made a film night or a long trip better, a small tip helps keep it updated.
+
+**USDT on the Tron network (TRC-20):**
+
+```
+TTAB8mi1sPNm5gCgGcBWSxf61abUnPNtNJ
+```
+
+<img src="docs/images/usdt-qr.svg" width="160" alt="QR code for the USDT TRC-20 address">
+
+⚠️ Send only **USDT** on the **Tron (TRC-20)** network. Other coins, or USDT on another network, can't be recovered.
 
 ## Questions or problems?
 
