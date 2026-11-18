@@ -1,6 +1,8 @@
 <p align="center"><img src="docs/images/banner.jpg" width="100%" alt="AudioShare"></p>
 
-<p align="center">Play the same audio on several headphones and speakers at once, on Mac and Windows.</p>
+<h1 align="center">AudioShare: one laptop, several headphones</h1>
+
+<p align="center">Play the same audio on several Bluetooth headphones, earbuds and speakers at once, on Mac and Windows. Connect two (or more) AirPods, headphones or speakers to one computer and everyone hears the same film, show or music.</p>
 
 <p align="center"><b>Made for partners, friends and families:</b> one laptop, everyone in their own headphones, each at their own volume.</p>
 
@@ -223,6 +225,29 @@ That only happens when you switch **Classic Bluetooth mode** on or off. Click **
 3. Write down what the device cards say (or take a screenshot) and ask for help with that.
 
 ---
+
+## Frequently asked questions
+
+### Can I connect two Bluetooth headphones to one Mac or Windows laptop?
+Yes, that's exactly what AudioShare does. Both macOS and Windows normally play sound on only one output at a time. AudioShare plays it on all the headphones and speakers you switch on, each at its own volume.
+
+### Does it work with AirPods, Sony, Bose, Beats or Samsung earbuds?
+Yes. Any headphones or speakers the computer can play sound on work: Bluetooth (AirPods, Sony, Bose, Beats, Samsung Galaxy Buds, JBL…), wired, USB, the headphone jack, and monitors or TVs over HDMI.
+
+### How many headphones can I use at once?
+As many as the computer can connect. With Bluetooth, about 3 at once works best; more can crackle because they share one radio. Wired headphones don't count toward that.
+
+### Will the sound be in sync?
+Wired headphones and the laptop's speakers are nearly instant. Bluetooth headphones each have their own small delay, and it differs by model. On Windows you can line them up with the **Delay** sliders and **Test sync**. On a Mac, the same kind of headphones for everyone works best.
+
+### Does it work for Netflix, YouTube, Spotify and games?
+Yes. AudioShare shares everything the computer plays, from any app or website.
+
+### Does it work on iPhone or iPad?
+No. Apple doesn't allow it there. iPhone and iPad have their own **Share Audio** for two sets of AirPods or Beats: open Control Center, tap the AirPlay icon, then **Share Audio**.
+
+### Is it free? Is it safe?
+Yes and yes. It's free, works without internet, and collects nothing. Windows and the Mac show a warning the first time only because AudioShare isn't from the App Store or Microsoft Store; the install steps above show how to open it.
 
 ## Updating
 
