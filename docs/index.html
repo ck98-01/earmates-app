@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AudioShare: play audio on multiple Bluetooth headphones at once (Mac &amp; Windows)</title>
 <meta name="description" content="Free app for Mac and Windows: connect two or more Bluetooth headphones, AirPods or speakers to one laptop and play the same sound on all of them, each at its own volume.">
 <link rel="canonical" href="https://ck98-01.github.io/audioshare-app/">
-<link rel="icon" href="images/icon.png">
+<link rel="icon" type="image/svg+xml" href="images/logo.svg">
+<link rel="icon" type="image/png" href="images/icon.png">
+<meta name="theme-color" content="#141213">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AudioShare: one laptop, several headphones">
 <meta property="og:description" content="Play the same audio on several Bluetooth headphones and speakers at once, on Mac and Windows. Free.">
 <meta property="og:url" content="https://ck98-01.github.io/audioshare-app/">
 <meta property="og:image" content="https://ck98-01.github.io/audioshare-app/images/banner.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,6 +42,8 @@
       "acceptedAnswer": { "@type": "Answer", "text": "Yes. Any headphones or speakers the computer can play sound on work: Bluetooth, wired, USB, the headphone jack, and monitors or TVs over HDMI." } },
     { "@type": "Question", "name": "How many headphones can I use at once?",
       "acceptedAnswer": { "@type": "Answer", "text": "As many as the computer can connect. With Bluetooth, about 3 at once works best. Wired headphones don't count toward that." } },
+    { "@type": "Question", "name": "Will the sound be in sync?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Wired headphones and the laptop's speakers are nearly instant. Bluetooth headphones each have a small delay that differs by model. On Windows you can line them up with the Delay sliders. On a Mac, the same kind of headphones for everyone works best." } },
     { "@type": "Question", "name": "Does it work for Netflix, YouTube, Spotify and games?",
       "acceptedAnswer": { "@type": "Answer", "text": "Yes. AudioShare shares everything the computer plays, from any app or website." } },
     { "@type": "Question", "name": "Does it work on iPhone or iPad?",
@@ -47,161 +54,433 @@
 }
 </script>
 <style>
+  /* Layout: the app's own window is the hero; everything below is a calm single column
+     where each person/device keeps its badge colour (A orange, B amber, C pink…). */
   :root {
-    --bg: #141213; --surface: #1E1B1D; --surface2: #282427; --line: #3A3337;
-    --text: #F4EFEF; --muted: #A69A9D; --accent: #FF4D2E; --bt: #4DA6FF; --green: #4ADE80;
+    color-scheme: dark;
+    --bg: #141213;          /* the app's window */
+    --surface: #1E1B1D;     /* cards */
+    --surface-2: #282427;   /* inputs, small buttons */
+    --raise: #352F33;       /* hover, Stop button */
+    --line: #3A3337;
+    --text: #F4EFEF;
+    --muted: #A69A9D;
+    --accent: #FF4D2E;      /* Share button, sliders, switches */
+    --bt: #4DA6FF;          /* everything Bluetooth */
+    --bt-line: rgba(0, 130, 252, .4);
+    --green: #4ADE80;       /* sharing */
+    --a: #FF4D2E; --b: #FFC23D; --c: #FF5C8A; --d: #B57BFF; --e: #3DD6C6;
+    --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI Variable Display", system-ui, sans-serif;
+    --body: "Hanken Grotesk", "Segoe UI Variable Text", -apple-system, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --gutter: clamp(16px, 4vw, 40px);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Inter, Roboto, sans-serif; }
-  a { color: var(--accent); }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-  header.top { display: flex; align-items: center; gap: 12px; padding: 20px 0; }
-  header.top img { width: 36px; height: 36px; }
-  header.top b { font-size: 20px; }
-  header.top nav { margin-left: auto; display: flex; gap: 18px; font-size: 15px; }
-  header.top nav a { color: var(--muted); text-decoration: none; }
-  header.top nav a:hover { color: var(--text); }
-  .hero { padding: 36px 0 24px; text-align: center; }
-  .hero h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
-  .hero p.lead { color: var(--muted); font-size: clamp(17px, 2.2vw, 20px); max-width: 680px; margin: 0 auto 28px; }
-  .buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn { display: inline-flex; flex-direction: column; align-items: center; padding: 14px 26px; border-radius: 14px;
-         text-decoration: none; font-weight: 600; font-size: 17px; background: var(--surface2); color: var(--text);
-         border: 1px solid var(--line); min-width: 220px; }
-  .btn small { font-weight: 400; font-size: 13px; color: var(--muted); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary small { color: rgba(255,255,255,.85); }
-  .note { color: var(--muted); font-size: 14px; margin-top: 14px; }
-  .banner { width: 100%; border-radius: 20px; margin: 36px 0 0; display: block; border: 1px solid var(--line); }
-  section { padding: 56px 0 8px; }
-  h2 { font-size: clamp(26px, 3.6vw, 34px); margin: 0 0 20px; letter-spacing: -0.01em; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-  .card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
-  .card div { padding: 14px 16px 18px; }
-  .card h3 { margin: 0 0 4px; font-size: 18px; }
-  .card p { margin: 0; color: var(--muted); font-size: 15px; }
-  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px;
-             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  ol.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
-  ol.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
-                        background: rgba(255,77,46,.18); color: var(--accent); font-weight: 700; margin-bottom: 8px; }
-  ol.steps b { display: block; }
-  ol.steps span { color: var(--muted); font-size: 15px; }
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 28px; padding: 0; list-style: none; }
-  .features li { padding-left: 22px; position: relative; }
-  .features li::before { content: ""; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-  details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; }
-  summary { cursor: pointer; font-weight: 600; }
-  details p { color: var(--muted); margin: 10px 0 0; }
-  .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-  .install .card { padding: 18px 20px; }
-  .install ol { padding-left: 20px; margin: 8px 0 0; color: var(--muted); font-size: 15px; }
-  .install li { margin-bottom: 6px; }
-  .install b { color: var(--text); }
-  footer { color: var(--muted); font-size: 14px; padding: 56px 0 40px; text-align: center; }
-  @media (max-width: 560px) {
-    header.top nav { display: none; }
-    .btn { width: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 17px/1.6 var(--body);
+         -webkit-font-smoothing: antialiased; }
+  img, svg { max-width: 100%; display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding-inline: var(--gutter); }
+  .mono { font-family: var(--mono); font-size: 13px; letter-spacing: .02em; color: var(--muted); }
+
+  /* ---------- top bar ---------- */
+  .bar { display: flex; align-items: center; gap: 12px; padding-block: 20px; }
+  .bar .brand { display: flex; align-items: center; gap: 10px; text-decoration: none;
+                font: 700 19px/1 var(--display); letter-spacing: -.01em; }
+  .bar .brand svg { width: 32px; height: 32px; }
+  .bar nav { margin-left: auto; display: flex; gap: 22px; font-size: 15px; }
+  .bar nav a { color: var(--muted); text-decoration: none; }
+  .bar nav a:hover { color: var(--text); }
+
+  /* ---------- hero ---------- */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 72px);
+          align-items: center; padding-block: clamp(24px, 6vw, 72px) clamp(48px, 7vw, 96px); }
+  .hero h1 { font-size: clamp(40px, 6.2vw, 74px); line-height: .98; letter-spacing: -.035em; font-weight: 750;
+             font-variation-settings: "opsz" 96; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero .lead { font-size: clamp(18px, 1.6vw, 20px); color: var(--muted); max-width: 34em; margin: 22px 0 30px; }
+  .downloads { display: flex; flex-wrap: wrap; gap: 12px; }
+  .dl { display: flex; align-items: center; gap: 12px; padding: 13px 20px 13px 16px; border-radius: 12px;
+        text-decoration: none; background: var(--surface-2); border: 1px solid var(--line);
+        transition: transform .15s ease, background .15s ease; }
+  .dl:hover { transform: translateY(-1px); background: var(--raise); }
+  .dl svg { width: 22px; height: 22px; flex: none; }
+  .dl b { display: block; font-weight: 600; font-size: 16px; line-height: 1.2; }
+  .dl span { display: block; font-size: 13px; color: var(--muted); }
+  .dl.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .dl.primary:hover { background: #ff6246; }
+  .dl.primary span { color: rgba(255, 255, 255, .82); }
+  .facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 22px; }
+  .facts span::before { content: "●"; color: var(--green); margin-right: 7px; font-size: 9px; vertical-align: 2px; }
+
+  /* ---------- the app window (live demo) ---------- */
+  .window { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+            box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .03) inset; }
+  .window .chrome { display: flex; gap: 8px; padding: 14px 16px 0; }
+  .window .chrome i { width: 12px; height: 12px; border-radius: 50%; background: #FF5F57; }
+  .window .chrome i:nth-child(2) { background: #FEBC2E; }
+  .window .chrome i:nth-child(3) { background: #28C840; }
+  .app { padding: 14px clamp(14px, 2.4vw, 22px) clamp(16px, 2.4vw, 22px); }
+  .app-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .app-head .name { display: flex; align-items: center; gap: 8px; font: 600 18px/1 var(--body); }
+  .app-head .name svg { width: 24px; height: 24px; }
+  .app-head .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+          border: 1px solid var(--line); background: var(--surface); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .sharing .pill { color: var(--text); }
+  .sharing .pill i { background: var(--green); box-shadow: 0 0 0 3px rgba(74, 222, 128, .18); }
+  .share-btn { font: 600 13px/1 var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 9px;
+               padding: 9px 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .sharing .share-btn { background: var(--raise); }
+  .share-btn svg { width: 14px; height: 14px; }
+  .app-note { margin: 12px 0 0; font-size: 12px; color: var(--muted); background: var(--surface); border: 1px solid var(--line);
+              border-radius: 9px; padding: 7px 10px; display: none; }
+  .sharing .app-note { display: block; }
+  .group { font: 600 11px/1 var(--body); letter-spacing: .06em; color: var(--muted); margin: 16px 2px 8px; }
+  .devices { display: grid; gap: 8px; }
+  .device { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+            background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 11px 12px; }
+  .device.bt { border-color: var(--bt-line); }
+  .badge { grid-row: span 2; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+           font: 700 13px/1 var(--body); color: var(--c1); background: color-mix(in srgb, var(--c1) 20%, transparent); }
+  .device .who { min-width: 0; }
+  .device .who b { display: block; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .device .who span { font-size: 12px; color: var(--muted); }
+  .device.bt .who span { color: var(--bt); }
+  .device .status { color: var(--accent); }
+  .device .vol { grid-column: 2 / 4; display: grid; grid-template-columns: minmax(0, 1fr) 3.2em; gap: 10px; align-items: center; }
+  .device .vol output { font: 500 12px/1 var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 10px; margin-left: 6px; vertical-align: -1px; }
+  .eq i { width: 2px; height: 3px; background: var(--green); border-radius: 1px; opacity: 0; }
+  .sharing .on .eq i { opacity: 1; animation: eq 0.9s ease-in-out infinite alternate; }
+  .sharing .on .eq i:nth-child(2) { animation-delay: -.3s; }
+  .sharing .on .eq i:nth-child(3) { animation-delay: -.6s; }
+  @keyframes eq { from { height: 3px; } to { height: 10px; } }
+
+  /* switch, as in the app */
+  .switch { appearance: none; width: 38px; height: 22px; border-radius: 999px; background: var(--line); position: relative;
+            cursor: pointer; margin: 0; transition: background .15s; }
+  .switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 14px; height: 14px; border-radius: 50%;
+                   background: var(--muted); transition: transform .15s, background .15s; }
+  .switch:checked { background: var(--accent); }
+  .switch:checked::after { transform: translateX(16px); background: #fff; }
+  /* slider */
+  input[type=range] { appearance: none; width: 100%; height: 18px; background: transparent; margin: 0; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px;
+    background: linear-gradient(var(--accent), var(--accent)) 0 / var(--p, 50%) 100% no-repeat, var(--line); }
+  input[type=range]::-moz-range-track { height: 4px; border-radius: 4px; background: var(--line); }
+  input[type=range]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--accent); }
+  input[type=range]::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%;
+    background: #EDE7E8; box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: #EDE7E8; }
+  .device:not(.on) input[type=range] { opacity: .45; }
+  .try { margin-top: 12px; text-align: center; }
+
+  /* ---------- sections ---------- */
+  section { padding-block: clamp(56px, 8vw, 104px) 0; }
+  .kicker { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  h2 { font-size: clamp(30px, 4.2vw, 48px); line-height: 1.04; letter-spacing: -.03em; font-weight: 700; max-width: 18em; }
+  .intro { color: var(--muted); max-width: 36em; margin: 16px 0 0; }
+
+  /* who it's for */
+  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 28px); margin-top: 36px; }
+  .person figure { margin: 0; }
+  .person img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; border: 1px solid var(--line); }
+  .person figcaption { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 14px; padding: 16px 4px 0; }
+  .person .badge { grid-row: span 2; }
+  .person h3 { font-size: 20px; font-weight: 650; letter-spacing: -.01em; }
+  .person p { margin: 0; color: var(--muted); font-size: 16px; }
+  .person .levels { grid-column: 2; margin-top: 6px; }
+
+  /* how it works: a real sequence */
+  .steps { list-style: none; padding: 0; margin: 36px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+           gap: 0; border-top: 1px solid var(--line); }
+  .steps li { padding: 22px 24px 0 0; display: grid; gap: 8px; align-content: start; }
+  .steps li + li { padding-left: 24px; border-left: 1px solid var(--line); }
+  .steps .n { font: 500 13px/1 var(--mono); color: var(--accent); }
+  .steps h3 { font-size: 21px; font-weight: 650; letter-spacing: -.01em; }
+  .steps p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  /* numbers worth knowing */
+  .specs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 36px; }
+  .spec { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 6px; align-content: start; }
+  .spec b { font: 650 30px/1 var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .spec b small { font-size: 16px; font-weight: 500; color: var(--muted); margin-left: 3px; }
+  .spec p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.45; }
+
+  /* install */
+  .install { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 36px; }
+  .os { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: clamp(18px, 2.4vw, 26px); display: grid; gap: 14px; align-content: start; }
+  .os header { display: flex; align-items: center; gap: 10px; }
+  .os header svg { width: 22px; height: 22px; }
+  .os h3 { font-size: 22px; font-weight: 650; }
+  .os header .mono { margin-left: auto; }
+  .os ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; color: var(--muted); }
+  .os ol b { color: var(--text); font-weight: 600; }
+  .os .why { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin: 0; }
+  .os .dl { justify-self: start; }
+
+  /* faq */
+  .faq { margin-top: 28px; border-top: 1px solid var(--line); max-width: 860px; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary { cursor: pointer; list-style: none; padding: 20px 40px 20px 0; position: relative;
+                 font: 600 18px/1.35 var(--body); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; position: absolute; right: 4px; top: 16px; font: 400 26px/1 var(--display); color: var(--muted);
+                        transition: transform .2s; }
+  .faq details[open] summary::after { transform: rotate(45deg); color: var(--accent); }
+  .faq details p { margin: 0 0 20px; color: var(--muted); max-width: 44em; }
+
+  /* closing */
+  .closing { margin-top: clamp(64px, 9vw, 112px); padding: clamp(28px, 5vw, 56px); border-radius: 22px;
+             background: var(--surface); border: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) auto;
+             gap: 24px; align-items: center; }
+  .closing h2 { font-size: clamp(28px, 3.6vw, 40px); }
+  footer { display: flex; flex-wrap: wrap; gap: 8px 22px; padding-block: 36px 48px; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .closing { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .bar nav { display: none; }
+    .people, .install { grid-template-columns: minmax(0, 1fr); }
+    .steps { grid-template-columns: minmax(0, 1fr); border-top: 0; }
+    .steps li, .steps li + li { padding: 18px 0; border-left: 0; border-top: 1px solid var(--line); }
+    .dl { flex: 1 1 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
+
+<!-- The logo, drawn once as vector art so it stays sharp at every size. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 1024 1024">
+      <rect width="1024" height="1024" rx="230" fill="#221D20"/>
+      <rect x="1.5" y="1.5" width="1021" height="1021" rx="229" fill="none" stroke="#3A3337" stroke-width="3"/>
+      <circle cx="230" cy="512" r="98" fill="#F7F1F0"/>
+      <g fill="none" stroke="#FF4D2E" stroke-width="74" stroke-linecap="round">
+        <path d="M337 355 A190 190 0 0 1 337 669"/>
+        <path d="M441 265 A325 325 0 0 1 441 759"/>
+        <path d="M550 181 A460 460 0 0 1 550 843"/>
+      </g>
+      <circle cx="828" cy="285" r="58" fill="#F7F1F0"/>
+      <circle cx="828" cy="720" r="58" fill="#F7F1F0"/>
+    </symbol>
+    <symbol id="apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.1 0-2.5-.9-2.5-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></symbol>
+    <symbol id="windows" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5.1 10.4 4v7.1H3zm8.4-1.2L21 2.5v8.6h-9.6zM3 12.1h7.4v7.1L3 18.1zm8.4 0H21v8.6l-9.6-1.4z"/></symbol>
+  </defs>
+</svg>
+
 <div class="wrap">
-  <header class="top">
-    <img src="images/icon.png" alt="">
-    <b>AudioShare</b>
-    <nav><a href="#how">How it works</a><a href="#install">Install</a><a href="#faq">FAQ</a><a href="https://github.com/ck98-01/audioshare-app">GitHub</a></nav>
+  <header class="bar">
+    <a class="brand" href="#top" aria-label="AudioShare home"><svg aria-hidden="true"><use href="#logo"/></svg>AudioShare</a>
+    <nav aria-label="Sections"><a href="#how">How it works</a><a href="#install">Install</a><a href="#faq">Questions</a><a href="https://github.com/ck98-01/audioshare-app">GitHub</a></nav>
   </header>
 
-  <div class="hero">
-    <h1>One laptop.<br>Everyone in their own headphones.</h1>
-    <p class="lead">AudioShare plays the same sound on several Bluetooth headphones, earbuds and speakers at once, on Mac and Windows. Each person gets their own volume.</p>
-    <div class="buttons">
-      <a class="btn primary" id="dl-mac" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-mac.zip">Download for Mac<small>macOS 13 or newer · Apple Silicon &amp; Intel</small></a>
-      <a class="btn" id="dl-win" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip">Download for Windows<small>Windows 10 or 11 · 64-bit</small></a>
-    </div>
-    <p class="note">Free · works without internet · collects nothing</p>
-    <img class="banner" src="images/banner.jpg" alt="AudioShare: several people listening to one laptop, each in their own headphones" width="1280" height="640">
-  </div>
-
-  <section id="who">
-    <h2>Made for sharing</h2>
-    <div class="grid">
-      <div class="card"><img src="images/partners.jpg" alt="A couple in bed watching a film on one laptop, each wearing earbuds" loading="lazy"><div><h3>Partners</h3><p>Watch a film in bed together, each with your own earbuds, without waking anyone.</p></div></div>
-      <div class="card"><img src="images/friends.jpg" alt="Three friends on a train sharing one laptop, each in their own headphones" loading="lazy"><div><h3>Friends</h3><p>Share a show or a match on a train, a plane or in a café, with nobody's sound leaking out.</p></div></div>
-      <div class="card"><img src="images/road-trip.jpg" alt="Two kids in a car's back seat sharing one laptop, each with headphones" loading="lazy"><div><h3>Road trips</h3><p>Keep the kids happy in the back seat with one laptop and several headphones.</p></div></div>
-      <div class="card"><img src="images/family.jpg" alt="A family on a sofa sharing one laptop; the grandfather's headphones are turned up louder" loading="lazy"><div><h3>Family movie night</h3><p>Give a grandparent who hears less their own louder volume.</p></div></div>
-    </div>
-  </section>
-
-  <section id="how">
-    <h2>How it works</h2>
-    <ol class="steps">
-      <li><b>Connect your headphones</b><span>Bluetooth, wired, USB, whatever you have. Connect them to the computer as usual.</span></li>
-      <li><b>Switch them on in AudioShare</b><span>Every headphone and speaker appears as a card. Click <em>Test</em> to hear which one is which.</span></li>
-      <li><b>Press Share audio</b><span>Everything the computer plays (Netflix, YouTube, Spotify, games) now plays on all of them.</span></li>
-    </ol>
-    <ul class="features" style="margin-top:28px">
-      <li>Works with AirPods, Sony, Bose, Beats, Galaxy Buds, JBL and any other headphones</li>
-      <li>Its own volume slider for each person</li>
-      <li>Test chime to find out which headphone is which</li>
-      <li>Keeps playing if one headphone disconnects, and rejoins it when it's back</li>
-      <li>Remembers your choices for next time</li>
-      <li>Puts your sound back to normal when you stop</li>
-    </ul>
-  </section>
-
-  <section id="install">
-    <h2>Install in 2 minutes</h2>
-    <div class="install">
-      <div class="card">
-        <h3>Mac</h3>
-        <ol>
-          <li>Download <b>AudioShare-mac.zip</b> and double-click it.</li>
-          <li>Drag <b>AudioShare</b> into <b>Applications</b> and open it.</li>
-          <li>The Mac says it "can't check" the app. Click <b>Done</b>.</li>
-          <li>Open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
-        </ol>
-        <p class="note">This only happens once, because AudioShare isn't from the App Store.</p>
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1>One laptop. Everyone in their <em>own</em> headphones.</h1>
+        <p class="lead">AudioShare plays the same sound on several Bluetooth headphones, earbuds and speakers at once, on Mac and Windows. Each person sets their own volume.</p>
+        <div class="downloads" id="downloads">
+          <a class="dl primary" id="dl-mac" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-mac.zip">
+            <svg aria-hidden="true"><use href="#apple"/></svg><div><b>Download for Mac</b><span>macOS 13 or newer</span></div></a>
+          <a class="dl" id="dl-win" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip">
+            <svg aria-hidden="true"><use href="#windows"/></svg><div><b>Download for Windows</b><span>Windows 10 or 11</span></div></a>
+        </div>
+        <div class="facts mono"><span>Free</span><span>Works offline</span><span>Collects nothing</span></div>
       </div>
-      <div class="card">
-        <h3>Windows</h3>
-        <ol>
-          <li>Download <b>AudioShare-windows.zip</b>, right-click it → <b>Extract All</b>.</li>
-          <li>Move <b>AudioShare.exe</b> to your Desktop or Documents.</li>
-          <li>Double-click it. If Windows says "Windows protected your PC", click <b>More info → Run anyway</b>.</li>
-        </ol>
-        <p class="note">This only happens once, because AudioShare isn't from the Microsoft Store.</p>
+
+      <!-- A working copy of the AudioShare window. -->
+      <div>
+        <div class="window" id="demo" aria-label="Interactive preview of the AudioShare window">
+          <div class="chrome" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="app">
+            <div class="app-head">
+              <div class="name"><svg aria-hidden="true"><use href="#logo"/></svg>AudioShare</div>
+              <div class="right">
+                <span class="pill" role="status"><i></i><span id="pill-text">Idle</span></span>
+                <button class="share-btn" id="share" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M4 15v-3a8 8 0 0 1 16 0v3M4 15a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2zm16 0a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2z"/></svg>
+                  <span id="share-text">Share audio</span></button>
+              </div>
+            </div>
+            <p class="app-note">Volume keys don't work while sharing. Use the sliders in AudioShare.</p>
+            <div class="group">CONNECTED DEVICES · 3</div>
+            <div class="devices">
+              <div class="device bt on" style="--c1: var(--a)">
+                <div class="badge">A</div>
+                <div class="who"><b>AirPods Pro</b><span>Bluetooth</span> <span class="status"></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></div>
+                <input class="switch" type="checkbox" id="sw-a" checked aria-label="Share to AirPods Pro">
+                <div class="vol"><input type="range" id="vol-a" min="0" max="100" value="60" aria-label="AirPods Pro volume"><output for="vol-a">60%</output></div>
+              </div>
+              <div class="device bt on" style="--c1: var(--b)">
+                <div class="badge">B</div>
+                <div class="who"><b>Sony WH-1000XM5</b><span>Bluetooth</span> <span class="status"></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></div>
+                <input class="switch" type="checkbox" id="sw-b" checked aria-label="Share to Sony WH-1000XM5">
+                <div class="vol"><input type="range" id="vol-b" min="0" max="100" value="45" aria-label="Sony WH-1000XM5 volume"><output for="vol-b">45%</output></div>
+              </div>
+              <div class="device on" style="--c1: var(--c)">
+                <div class="badge">C</div>
+                <div class="who"><b>Grandpa's headphones</b><span>Wired · headphone jack</span> <span class="status"></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></div>
+                <input class="switch" type="checkbox" id="sw-c" checked aria-label="Share to Grandpa's headphones">
+                <div class="vol"><input type="range" id="vol-c" min="0" max="100" value="90" aria-label="Grandpa's headphones volume"><output for="vol-c">90%</output></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="try mono">Try it: press Share audio, move a slider.</p>
       </div>
     </div>
-    <p class="note">Step-by-step guide and troubleshooting: <a href="https://github.com/ck98-01/audioshare-app#readme">full guide on GitHub</a>.</p>
-  </section>
 
-  <section id="faq">
-    <h2>Questions</h2>
-    <details><summary>Can I connect two Bluetooth headphones to one Mac or Windows laptop?</summary><p>Yes, that's exactly what AudioShare does. macOS and Windows normally play sound on one output at a time. AudioShare plays it on all the headphones and speakers you switch on, each at its own volume.</p></details>
-    <details><summary>Does it work with AirPods, Sony, Bose, Beats or Samsung earbuds?</summary><p>Yes. Any headphones or speakers the computer can play sound on work: Bluetooth, wired, USB, the headphone jack, and monitors or TVs over HDMI.</p></details>
-    <details><summary>How many headphones can I use at once?</summary><p>As many as the computer can connect. With Bluetooth, about 3 at once works best; more can crackle because they share one radio. Wired headphones don't count toward that.</p></details>
-    <details><summary>Will the sound be in sync?</summary><p>Wired headphones and the laptop's speakers are nearly instant. Bluetooth headphones each have a small delay that differs by model. On Windows you can line them up with the Delay sliders. On a Mac, the same kind of headphones for everyone works best.</p></details>
-    <details><summary>Does it work for Netflix, YouTube, Spotify and games?</summary><p>Yes. AudioShare shares everything the computer plays, from any app or website.</p></details>
-    <details><summary>Does it work on iPhone or iPad?</summary><p>No, Apple doesn't allow it. iPhone and iPad have their own Share Audio for two sets of AirPods or Beats: open Control Center, tap the AirPlay icon, then Share Audio.</p></details>
-    <details><summary>Is it free? Is it safe?</summary><p>Yes and yes. It's free, works without internet, and collects nothing. The warning the first time only appears because AudioShare isn't from an app store.</p></details>
-  </section>
+    <section id="who" aria-labelledby="who-h">
+      <div class="kicker">Who it's for</div>
+      <h2 id="who-h">For the moments one pair of headphones isn't enough.</h2>
+      <div class="people">
+        <div class="person"><figure>
+          <img src="images/partners.jpg" alt="A couple in bed watching a film on one laptop, each wearing earbuds" width="1280" height="720" loading="lazy">
+          <figcaption><div class="badge" style="--c1: var(--a)">A</div><h3>Partners</h3><p>Watch a film in bed together, each with your own earbuds, without waking anyone.</p></figcaption></figure></div>
+        <div class="person"><figure>
+          <img src="images/friends.jpg" alt="Three friends on a train sharing one laptop, each in their own headphones" width="1280" height="720" loading="lazy">
+          <figcaption><div class="badge" style="--c1: var(--b)">B</div><h3>Friends</h3><p>Share a show or a match on a train, a plane or in a café, with nobody's sound leaking out.</p></figcaption></figure></div>
+        <div class="person"><figure>
+          <img src="images/road-trip.jpg" alt="Two kids in a car's back seat sharing one laptop, each with headphones" width="1280" height="720" loading="lazy">
+          <figcaption><div class="badge" style="--c1: var(--d)">C</div><h3>Road trips</h3><p>Keep the kids happy in the back seat with one laptop and several headphones.</p></figcaption></figure></div>
+        <div class="person"><figure>
+          <img src="images/family.jpg" alt="A family on a sofa sharing one laptop; the grandfather's headphones are turned up louder" width="1280" height="720" loading="lazy">
+          <figcaption><div class="badge" style="--c1: var(--c)">D</div><h3>Family movie night</h3><p>Grandpa at 90%, everyone else at 50%. Each person hears it the way they need.</p></figcaption></figure></div>
+      </div>
+    </section>
+
+    <section id="how" aria-labelledby="how-h">
+      <div class="kicker">How it works</div>
+      <h2 id="how-h">Three steps, no settings to learn.</h2>
+      <ol class="steps">
+        <li><span class="n">01</span><h3>Connect the headphones</h3><p>Pair Bluetooth headphones or plug in wired ones, the way you always do. Each one appears in AudioShare as a card.</p></li>
+        <li><span class="n">02</span><h3>Switch them on</h3><p>Turn on every card that should play. Not sure which is which? Press <b>Test</b> and only that headphone plays a chime.</p></li>
+        <li><span class="n">03</span><h3>Press Share audio</h3><p>Netflix, YouTube, Spotify, games: everything the computer plays now plays on all of them. Stop puts your sound back.</p></li>
+      </ol>
+      <div class="specs">
+        <div class="spec"><b>≈3</b><p>Bluetooth headphones at once works best. Wired ones don't count.</p></div>
+        <div class="spec"><b>0–100<small>%</small></b><p>A volume slider per person, or link them to move together.</p></div>
+        <div class="spec"><b>100–300<small>ms</small></b><p>Typical Bluetooth delay. It varies by model; wired is near instant.</p></div>
+        <div class="spec"><b>0<small>KB</small></b><p>Sent over the internet. AudioShare works fully offline.</p></div>
+      </div>
+    </section>
+
+    <section id="install" aria-labelledby="install-h">
+      <div class="kicker">Install</div>
+      <h2 id="install-h">Ready in two minutes.</h2>
+      <p class="intro">The first time you open it, your computer shows a warning because AudioShare isn't from the App Store or Microsoft Store. Here's how to get past it, once.</p>
+      <div class="install">
+        <div class="os">
+          <header><svg aria-hidden="true"><use href="#apple"/></svg><h3>Mac</h3><span class="mono">macOS 13+</span></header>
+          <ol>
+            <li>Download <b>AudioShare-mac.zip</b> and double-click it.</li>
+            <li>Drag <b>AudioShare</b> into <b>Applications</b> and open it.</li>
+            <li>The Mac says it can't check the app. Click <b>Done</b>.</li>
+            <li>Open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>.</li>
+          </ol>
+          <a class="dl" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-mac.zip"><svg aria-hidden="true"><use href="#apple"/></svg><div><b>Download for Mac</b><span>Apple Silicon and Intel</span></div></a>
+        </div>
+        <div class="os">
+          <header><svg aria-hidden="true"><use href="#windows"/></svg><h3>Windows</h3><span class="mono">Windows 10 / 11</span></header>
+          <ol>
+            <li>Download <b>AudioShare-windows.zip</b>, right-click it and choose <b>Extract All</b>.</li>
+            <li>Move <b>AudioShare.exe</b> to your Desktop or Documents.</li>
+            <li>Double-click it. If you see "Windows protected your PC", click <b>More info</b>, then <b>Run anyway</b>.</li>
+          </ol>
+          <a class="dl" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip"><svg aria-hidden="true"><use href="#windows"/></svg><div><b>Download for Windows</b><span>64-bit, nothing else to install</span></div></a>
+        </div>
+      </div>
+      <p class="intro">Something not working? The <a href="https://github.com/ck98-01/audioshare-app#readme">full guide</a> has a fix for each common problem.</p>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-h">
+      <div class="kicker">Questions</div>
+      <h2 id="faq-h">Good to know.</h2>
+      <div class="faq">
+        <details><summary>Can I connect two Bluetooth headphones to one Mac or Windows laptop?</summary><p>Yes, that's exactly what AudioShare does. macOS and Windows normally play sound on one output at a time. AudioShare plays it on all the headphones and speakers you switch on, each at its own volume.</p></details>
+        <details><summary>Does it work with AirPods, Sony, Bose, Beats or Samsung earbuds?</summary><p>Yes. Any headphones or speakers the computer can play sound on work: Bluetooth, wired, USB, the headphone jack, and monitors or TVs over HDMI.</p></details>
+        <details><summary>How many headphones can I use at once?</summary><p>As many as the computer can connect. With Bluetooth, about 3 at once works best; more can crackle because they share one radio. Wired headphones don't count toward that.</p></details>
+        <details><summary>Will the sound be in sync?</summary><p>Wired headphones and the laptop's speakers are nearly instant. Bluetooth headphones each have a small delay that differs by model. On Windows you can line them up with the Delay sliders and Test sync. On a Mac, the same kind of headphones for everyone works best.</p></details>
+        <details><summary>Does it work for Netflix, YouTube, Spotify and games?</summary><p>Yes. AudioShare shares everything the computer plays, from any app or website.</p></details>
+        <details><summary>Does it work on iPhone or iPad?</summary><p>No, Apple doesn't allow it there. iPhone and iPad have their own Share Audio for two sets of AirPods or Beats: open Control Center, tap the AirPlay icon, then Share Audio.</p></details>
+        <details><summary>Is it free? Is it safe?</summary><p>Yes and yes. It's free, works without internet, and collects nothing. The warning the first time only appears because AudioShare isn't from an app store.</p></details>
+      </div>
+    </section>
+
+    <div class="closing">
+      <div>
+        <h2>Press play once. Everyone hears it.</h2>
+        <p class="intro">Free for Mac and Windows.</p>
+      </div>
+      <div class="downloads">
+        <a class="dl primary" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-mac.zip"><svg aria-hidden="true"><use href="#apple"/></svg><div><b>Mac</b><span>macOS 13+</span></div></a>
+        <a class="dl" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip"><svg aria-hidden="true"><use href="#windows"/></svg><div><b>Windows</b><span>10 and 11</span></div></a>
+      </div>
+    </div>
+  </main>
 
   <footer>
-    AudioShare · <a href="https://github.com/ck98-01/audioshare-app/releases">All downloads</a> · <a href="https://github.com/ck98-01/audioshare-app/issues">Report a problem</a>
+    <span>AudioShare</span>
+    <a href="https://github.com/ck98-01/audioshare-app/releases">All downloads</a>
+    <a href="https://github.com/ck98-01/audioshare-app#readme">Full guide</a>
+    <a href="https://github.com/ck98-01/audioshare-app/issues">Report a problem</a>
   </footer>
 </div>
+
 <script>
-  // Put this visitor's computer first.
-  if (/Win/.test(navigator.platform || navigator.userAgent)) {
+  // Windows visitors see their download first.
+  if (/Win/.test(navigator.userAgentData?.platform || navigator.platform || navigator.userAgent)) {
     const mac = document.getElementById('dl-mac'), win = document.getElementById('dl-win');
     mac.classList.remove('primary'); win.classList.add('primary');
     win.parentNode.insertBefore(win, mac);
   }
+
+  // The preview window behaves like the app: switches, sliders, Share / Stop.
+  const demo = document.getElementById('demo');
+  const shareText = document.getElementById('share-text'), pill = document.getElementById('pill-text');
+  const devices = [...demo.querySelectorAll('.device')];
+
+  function render() {
+    const sharing = demo.classList.contains('sharing');
+    let count = 0;
+    devices.forEach(d => {
+      const on = d.querySelector('.switch').checked;
+      d.classList.toggle('on', on);
+      d.querySelector('.status').textContent = sharing && on ? '· Sharing' : '';
+      if (on) count++;
+    });
+    shareText.textContent = sharing ? 'Stop sharing' : 'Share audio';
+    pill.textContent = sharing ? `Sharing to ${count}` : 'Idle';
+  }
+  function paint(range) {
+    range.style.setProperty('--p', range.value + '%');
+    range.nextElementSibling.textContent = range.value + '%';
+  }
+  document.getElementById('share').addEventListener('click', () => { demo.classList.toggle('sharing'); render(); });
+  devices.forEach(d => {
+    d.querySelector('.switch').addEventListener('change', render);
+    const range = d.querySelector('input[type=range]');
+    range.addEventListener('input', () => paint(range));
+    paint(range);
+  });
+  demo.classList.add('sharing');
+  render();
 </script>
 </body>
 </html>
