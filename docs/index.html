@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AudioShare: play audio on multiple Bluetooth headphones at once (Mac &amp; Windows)</title>
+<meta name="description" content="Free app for Mac and Windows: connect two or more Bluetooth headphones, AirPods or speakers to one laptop and play the same sound on all of them, each at its own volume.">
+<link rel="canonical" href="https://ck98-01.github.io/audioshare-app/">
+<link rel="icon" href="images/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AudioShare: one laptop, several headphones">
+<meta property="og:description" content="Play the same audio on several Bluetooth headphones and speakers at once, on Mac and Windows. Free.">
+<meta property="og:url" content="https://ck98-01.github.io/audioshare-app/">
+<meta property="og:image" content="https://ck98-01.github.io/audioshare-app/images/banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AudioShare",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "macOS 13+, Windows 10, Windows 11",
+  "description": "Play the same audio on several Bluetooth headphones, earbuds and speakers at once, each at its own volume.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "downloadUrl": "https://github.com/ck98-01/audioshare-app/releases/latest",
+  "image": "https://ck98-01.github.io/audioshare-app/images/banner.jpg"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Can I connect two Bluetooth headphones to one Mac or Windows laptop?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. macOS and Windows normally play sound on one output at a time. AudioShare plays it on all the headphones and speakers you switch on, each at its own volume." } },
+    { "@type": "Question", "name": "Does it work with AirPods, Sony, Bose, Beats or Samsung earbuds?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Any headphones or speakers the computer can play sound on work: Bluetooth, wired, USB, the headphone jack, and monitors or TVs over HDMI." } },
+    { "@type": "Question", "name": "How many headphones can I use at once?",
+      "acceptedAnswer": { "@type": "Answer", "text": "As many as the computer can connect. With Bluetooth, about 3 at once works best. Wired headphones don't count toward that." } },
+    { "@type": "Question", "name": "Does it work for Netflix, YouTube, Spotify and games?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. AudioShare shares everything the computer plays, from any app or website." } },
+    { "@type": "Question", "name": "Does it work on iPhone or iPad?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No, Apple doesn't allow it. iPhone and iPad have their own Share Audio for two sets of AirPods or Beats, in Control Center under the AirPlay icon." } },
+    { "@type": "Question", "name": "Is AudioShare free and safe?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. It's free, works without internet, and collects nothing." } }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg: #141213; --surface: #1E1B1D; --surface2: #282427; --line: #3A3337;
+    --text: #F4EFEF; --muted: #A69A9D; --accent: #FF4D2E; --bt: #4DA6FF; --green: #4ADE80;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Inter, Roboto, sans-serif; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  header.top { display: flex; align-items: center; gap: 12px; padding: 20px 0; }
+  header.top img { width: 36px; height: 36px; }
+  header.top b { font-size: 20px; }
+  header.top nav { margin-left: auto; display: flex; gap: 18px; font-size: 15px; }
+  header.top nav a { color: var(--muted); text-decoration: none; }
+  header.top nav a:hover { color: var(--text); }
+  .hero { padding: 36px 0 24px; text-align: center; }
+  .hero h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
+  .hero p.lead { color: var(--muted); font-size: clamp(17px, 2.2vw, 20px); max-width: 680px; margin: 0 auto 28px; }
+  .buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; flex-direction: column; align-items: center; padding: 14px 26px; border-radius: 14px;
+         text-decoration: none; font-weight: 600; font-size: 17px; background: var(--surface2); color: var(--text);
+         border: 1px solid var(--line); min-width: 220px; }
+  .btn small { font-weight: 400; font-size: 13px; color: var(--muted); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary small { color: rgba(255,255,255,.85); }
+  .note { color: var(--muted); font-size: 14px; margin-top: 14px; }
+  .banner { width: 100%; border-radius: 20px; margin: 36px 0 0; display: block; border: 1px solid var(--line); }
+  section { padding: 56px 0 8px; }
+  h2 { font-size: clamp(26px, 3.6vw, 34px); margin: 0 0 20px; letter-spacing: -0.01em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+  .card div { padding: 14px 16px 18px; }
+  .card h3 { margin: 0 0 4px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px;
+             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  ol.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  ol.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
+                        background: rgba(255,77,46,.18); color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  ol.steps b { display: block; }
+  ol.steps span { color: var(--muted); font-size: 15px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 28px; padding: 0; list-style: none; }
+  .features li { padding-left: 22px; position: relative; }
+  .features li::before { content: ""; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+  .install { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .install .card { padding: 18px 20px; }
+  .install ol { padding-left: 20px; margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+  .install li { margin-bottom: 6px; }
+  .install b { color: var(--text); }
+  footer { color: var(--muted); font-size: 14px; padding: 56px 0 40px; text-align: center; }
+  @media (max-width: 560px) {
+    header.top nav { display: none; }
+    .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="images/icon.png" alt="">
+    <b>AudioShare</b>
+    <nav><a href="#how">How it works</a><a href="#install">Install</a><a href="#faq">FAQ</a><a href="https://github.com/ck98-01/audioshare-app">GitHub</a></nav>
+  </header>
+
+  <div class="hero">
+    <h1>One laptop.<br>Everyone in their own headphones.</h1>
+    <p class="lead">AudioShare plays the same sound on several Bluetooth headphones, earbuds and speakers at once, on Mac and Windows. Each person gets their own volume.</p>
+    <div class="buttons">
+      <a class="btn primary" id="dl-mac" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-mac.zip">Download for Mac<small>macOS 13 or newer · Apple Silicon &amp; Intel</small></a>
+      <a class="btn" id="dl-win" href="https://github.com/ck98-01/audioshare-app/releases/latest/download/AudioShare-windows.zip">Download for Windows<small>Windows 10 or 11 · 64-bit</small></a>
+    </div>
+    <p class="note">Free · works without internet · collects nothing</p>
+    <img class="banner" src="images/banner.jpg" alt="AudioShare: several people listening to one laptop, each in their own headphones" width="1280" height="640">
+  </div>
+
+  <section id="who">
+    <h2>Made for sharing</h2>
+    <div class="grid">
+      <div class="card"><img src="images/partners.jpg" alt="A couple in bed watching a film on one laptop, each wearing earbuds" loading="lazy"><div><h3>Partners</h3><p>Watch a film in bed together, each with your own earbuds, without waking anyone.</p></div></div>
+      <div class="card"><img src="images/friends.jpg" alt="Three friends on a train sharing one laptop, each in their own headphones" loading="lazy"><div><h3>Friends</h3><p>Share a show or a match on a train, a plane or in a café, with nobody's sound leaking out.</p></div></div>
+      <div class="card"><img src="images/road-trip.jpg" alt="Two kids in a car's back seat sharing one laptop, each with headphones" loading="lazy"><div><h3>Road trips</h3><p>Keep the kids happy in the back seat with one laptop and several headphones.</p></div></div>
+      <div class="card"><img src="images/family.jpg" alt="A family on a sofa sharing one laptop; the grandfather's headphones are turned up louder" loading="lazy"><div><h3>Family movie night</h3><p>Give a grandparent who hears less their own louder volume.</p></div></div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><b>Connect your headphones</b><span>Bluetooth, wired, USB, whatever you have. Connect them to the computer as usual.</span></li>
+      <li><b>Switch them on in AudioShare</b><span>Every headphone and speaker appears as a card. Click <em>Test</em> to hear which one is which.</span></li>
+      <li><b>Press Share audio</b><span>Everything the computer plays (Netflix, YouTube, Spotify, games) now plays on all of them.</span></li>
+    </ol>
+    <ul class="features" style="margin-top:28px">
+      <li>Works with AirPods, Sony, Bose, Beats, Galaxy Buds, JBL and any other headphones</li>
+      <li>Its own volume slider for each person</li>
+      <li>Test chime to find out which headphone is which</li>
+      <li>Keeps playing if one headphone disconnects, and rejoins it when it's back</li>
+      <li>Remembers your choices for next time</li>
+      <li>Puts your sound back to normal when you stop</li>
+    </ul>
+  </section>
+
+  <section id="install">
+    <h2>Install in 2 minutes</h2>
+    <div class="install">
+      <div class="card">
+        <h3>Mac</h3>
+        <ol>
+          <li>Download <b>AudioShare-mac.zip</b> and double-click it.</li>
+          <li>Drag <b>AudioShare</b> into <b>Applications</b> and open it.</li>
+          <li>The Mac says it "can't check" the app. Click <b>Done</b>.</li>
+          <li>Open <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>.</li>
+        </ol>
+        <p class="note">This only happens once, because AudioShare isn't from the App Store.</p>
+      </div>
+      <div class="card">
+        <h3>Windows</h3>
+        <ol>
+          <li>Download <b>AudioShare-windows.zip</b>, right-click it → <b>Extract All</b>.</li>
+          <li>Move <b>AudioShare.exe</b> to your Desktop or Documents.</li>
+          <li>Double-click it. If Windows says "Windows protected your PC", click <b>More info → Run anyway</b>.</li>
+        </ol>
+        <p class="note">This only happens once, because AudioShare isn't from the Microsoft Store.</p>
+      </div>
+    </div>
+    <p class="note">Step-by-step guide and troubleshooting: <a href="https://github.com/ck98-01/audioshare-app#readme">full guide on GitHub</a>.</p>
+  </section>
+
+  <section id="faq">
+    <h2>Questions</h2>
+    <details><summary>Can I connect two Bluetooth headphones to one Mac or Windows laptop?</summary><p>Yes, that's exactly what AudioShare does. macOS and Windows normally play sound on one output at a time. AudioShare plays it on all the headphones and speakers you switch on, each at its own volume.</p></details>
+    <details><summary>Does it work with AirPods, Sony, Bose, Beats or Samsung earbuds?</summary><p>Yes. Any headphones or speakers the computer can play sound on work: Bluetooth, wired, USB, the headphone jack, and monitors or TVs over HDMI.</p></details>
+    <details><summary>How many headphones can I use at once?</summary><p>As many as the computer can connect. With Bluetooth, about 3 at once works best; more can crackle because they share one radio. Wired headphones don't count toward that.</p></details>
+    <details><summary>Will the sound be in sync?</summary><p>Wired headphones and the laptop's speakers are nearly instant. Bluetooth headphones each have a small delay that differs by model. On Windows you can line them up with the Delay sliders. On a Mac, the same kind of headphones for everyone works best.</p></details>
+    <details><summary>Does it work for Netflix, YouTube, Spotify and games?</summary><p>Yes. AudioShare shares everything the computer plays, from any app or website.</p></details>
+    <details><summary>Does it work on iPhone or iPad?</summary><p>No, Apple doesn't allow it. iPhone and iPad have their own Share Audio for two sets of AirPods or Beats: open Control Center, tap the AirPlay icon, then Share Audio.</p></details>
+    <details><summary>Is it free? Is it safe?</summary><p>Yes and yes. It's free, works without internet, and collects nothing. The warning the first time only appears because AudioShare isn't from an app store.</p></details>
+  </section>
+
+  <footer>
+    AudioShare · <a href="https://github.com/ck98-01/audioshare-app/releases">All downloads</a> · <a href="https://github.com/ck98-01/audioshare-app/issues">Report a problem</a>
+  </footer>
+</div>
+<script>
+  // Put this visitor's computer first.
+  if (/Win/.test(navigator.platform || navigator.userAgent)) {
+    const mac = document.getElementById('dl-mac'), win = document.getElementById('dl-win');
+    mac.classList.remove('primary'); win.classList.add('primary');
+    win.parentNode.insertBefore(win, mac);
+  }
+</script>
+</body>
+</html>
